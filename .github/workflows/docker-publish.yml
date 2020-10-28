@@ -1,0 +1,24 @@
+name: Docker
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build image
+        run: docker build . --file Dockerfile --tag ellisvalentiner/misc:flask-pg-writer
+
+      - name: Log into Docker Hub Container Registry
+        run: echo "${{ secrets.DOCKER_HUB_PAT }}" | docker login -u ellisvalentiner --password-stdin
+
+      - name: Push image to Docker Hub Container Registry
+        run: |
+          docker push ellisvalentiner/misc:flask-pg-writer
